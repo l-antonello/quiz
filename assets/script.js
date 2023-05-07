@@ -1,55 +1,195 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Code Quiz Challenge</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
-    <link rel="stylesheet" type="text/css" href="./assets/style.css">
-</head>
-<body>
-    <div class="container">
+// declaring variables
+var quizBody = document.getElementById("quiz");
+var resultsEl = document.getElementById("result");
+var finalScoreEl = document.getElementById("finalScore");
+var gameoverDiv = document.getElementById("gameover");
+var questionsEl = document.getElementById("questions");
+var quizTimer = document.getElementById("timer");
+var startQuizButton = document.getElementById("startbtn");
+var startQuizDiv = document.getElementById("startpage");
+var highscoreContainer = document.getElementById("highscoreContainer");
+var highscoreDiv = document.getElementById("high-scorePage");
+var highscoreInputName = document.getElementById("initials");
+var highscoreDisplayName = document.getElementById("highscore-initials");
+var endGameBtns = document.getElementById("endGameBtns");
+var submitScoreBtn = document.getElementById("submitScore");
+var highscoreDisplayScore = document.getElementById("highscore-score");
+var buttonA = document.getElementById("a");
+var buttonB = document.getElementById("b");
+var buttonC = document.getElementById("c");
+var buttonD = document.getElementById("d");
 
-        <div id="startpage" class="section">
-            <h2 class="title">Quiz on Pennsylvania and Philadelphia!</h2>
-            <button id="startbtn" class="button is-primary">Start Quiz</button>
-            <button id="startPageHighscore" class="button is-dark" onclick="showHighscore()">High Scores</button>
-        </div>
+// questions
+var quizQuestions = [{
+    question: "What is the capital of Pennsylvania?",
+    choiceA: "Philadelphia",
+    choiceB: "Pittsburgh",
+    choiceC: "Allentown",
+    choiceD: "Harrisburg",
+    correctAnswer: "d"},
+  {
+    question: "What is the State dog of Pennsylvania?",
+    choiceA: "Dachshund",
+    choiceB: "Chihuahua",
+    choiceC: "Golden Retriever",
+    choiceD: "Great Dane",
+    correctAnswer: "d"},
+   {
+    question: "What river separates New Jersey from Philadelphia?",
+    choiceA: "Yellow",
+    choiceB: "Schuylkill",
+    choiceC: "Delaware",
+    choiceD: "Houston",
+    correctAnswer: "c"},
+    {
+    question: "What religion was William Penn",
+    choiceA: "Quaker",
+    choiceB: "Muslim",
+    choiceC: "Jewish",
+    choiceD: "Hindu",
+    correctAnswer: "a"},
+    {
+    question: "What does Pennsylvania translate to?",
+    choiceA: "Penn's blood",
+    choiceB: "Penn's woods",
+    choiceC: "Penn's city",
+    choiceD: "Penn's ship",
+    correctAnswer: "b"},  
+    {
+    question: "What does Philadelphia translate to?",
+    choiceA: "City of motherly love",
+    choiceB: "City of fatherly love",
+    choiceC: "City of counsily love",
+    choiceD: "City of brotherly love",
+    correctAnswer: "d"},
+    {
+    question: "What national holiday takes place in Pennsylvania?",
+    choiceA: "Arbor Day",
+    choiceB: "Running of the Bulls",
+    choiceC: "Groundhog Day",
+    choiceD: "Labor Day",
+    correctAnswer: "c"},
+        
+    
+    ];
+// other global variables
+var finalQuestionIndex = quizQuestions.length;
+var currentQuestionIndex = 0;
+var timeLeft = 76;
+var timerInterval;
+var score = 0;
+var correct;
 
-        <div id="quiz" class="section">
-            <div id="timer">Time left: </div>
-            <div id="questions">
-                <p>Questions Placeholder</p>
-            </div>
-            <button id="a" class="button" onclick="checkAnswer('a')">A</button>
-            <button id="b" class="button" onclick="checkAnswer('b')">B</button>
-            <button id="c" class="button" onclick="checkAnswer('c')">C</button>
-            <button id="d" class="button" onclick="checkAnswer('d')">D</button>
-            <div id="result"></div>
-        </div>
+// next questions function
+function generateQuizQuestion(){
+    gameoverDiv.style.display = "none";
+    if (currentQuestionIndex === finalQuestionIndex){
+        return showScore();
+    } 
+    var currentQuestion = quizQuestions[currentQuestionIndex];
+    questionsEl.innerHTML = "<p>" + currentQuestion.question + "</p>";
+    buttonA.innerHTML = currentQuestion.choiceA;
+    buttonB.innerHTML = currentQuestion.choiceB;
+    buttonC.innerHTML = currentQuestion.choiceC;
+    buttonD.innerHTML = currentQuestion.choiceD;
+};
 
-        <div id="gameover" class="section">
-            <div id="finalScore"></div>
-            <input type="text" size="40" placeholder="Enter your initials for high score" name="initials" id="initials" class="input">
-            <button id="submitScore" class="button is-primary">Submit Score</button>
-        </div>
+// start quiz function
+function startQuiz(){
+    gameoverDiv.style.display = "none";
+    startQuizDiv.style.display = "none";
+    generateQuizQuestion();
 
-        <div id="highscoreContainer" class="section">
-            <div id="high-scorePage">
-                <div id="highscore-header" class="columns">
-                    <div class="column"><h3>User Initials</h3></div>
-                    <div class="column"><h3>Score</h3></div>
-                </div>
-                <div id="highscore-initials"></div>
-                <div id="highscore-score"></div>
-            </div>
-            <div id="endGameBtns" class="section">
-                <button id="playAgain" class="button is-primary" onclick="replayQuiz()">Play Again</button>
-                <button id="clearHighscore" class="button is-danger" onclick="clearScore()">Clear Highscores</button>
-            </div>
-        </div>
+    //timer
+    timerInterval = setInterval(function() {
+        timeLeft--;
+        quizTimer.textContent = "Time left: " + timeLeft;
+    
+        if(timeLeft === 0) {
+          clearInterval(timerInterval);
+          showScore();
+        }
+      }, 1000);
+    quizBody.style.display = "block";
+}
+// display score
+function showScore(){
+    quizBody.style.display = "none"
+    gameoverDiv.style.display = "flex";
+    clearInterval(timerInterval);
+    highscoreInputName.value = "";
+    finalScoreEl.innerHTML = "You got " + score + " out of " + quizQuestions.length + " correct!";
+}
 
-    </div>
-    <script src="./assets/script.js"></script>
-</body>
-</html>
+// submit highscores
+submitScoreBtn.addEventListener("click", function highscore(){
+    
+    
+    if(highscoreInputName.value === "") {
+        alert("Initials cannot be blank");
+        return false;
+    }else{
+        var savedHighscores = JSON.parse(localStorage.getItem("savedHighscores")) || [];
+        var currentUser = highscoreInputName.value.trim();
+        var currentHighscore = {
+            name : currentUser,
+            score : score
+        };
+    
+        gameoverDiv.style.display = "none";
+        highscoreContainer.style.display = "flex";
+        highscoreDiv.style.display = "block";
+        endGameBtns.style.display = "flex";
+        
+        savedHighscores.push(currentHighscore);
+        localStorage.setItem("savedHighscores", JSON.stringify(savedHighscores));
+        generateHighscores();
+
+    }
+    
+});
+
+// clear highscores
+function generateHighscores(){
+    highscoreDisplayName.innerHTML = "";
+    highscoreDisplayScore.innerHTML = "";
+    var highscores = JSON.parse(localStorage.getItem("savedHighscores")) || [];
+    for (i=0; i<highscores.length; i++){
+        var newNameSpan = document.createElement("li");
+        var newScoreSpan = document.createElement("li");
+        newNameSpan.textContent = highscores[i].name;
+        newScoreSpan.textContent = highscores[i].score;
+        highscoreDisplayName.appendChild(newNameSpan);
+        highscoreDisplayScore.appendChild(newScoreSpan);
+    }
+}
+
+// replay
+function replayQuiz(){
+    highscoreContainer.style.display = "none";
+    gameoverDiv.style.display = "none";
+    startQuizDiv.style.display = "flex";
+    timeLeft = 76;
+    score = 0;
+    currentQuestionIndex = 0;
+}
+
+// alerts for right/wrong
+function checkAnswer(answer){
+    correct = quizQuestions[currentQuestionIndex].correctAnswer;
+
+    if (answer === correct && currentQuestionIndex !== finalQuestionIndex){
+        score++;
+        alert("That Is Correct!");
+        currentQuestionIndex++;
+        generateQuizQuestion();
+    }else if (answer !== correct && currentQuestionIndex !== finalQuestionIndex){
+        alert("That Is Incorrect.")
+        currentQuestionIndex++;
+        generateQuizQuestion();
+    }else{
+        showScore();
+    }
+}
+    // start quiz
+    startQuizButton.addEventListener("click",startQuiz);
