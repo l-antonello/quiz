@@ -6,7 +6,7 @@
 N/A
 
 ## Usage
-![Link to quiz](https://l-antonello.github.io/quiz/)
+[Link to quiz](https://l-antonello.github.io/quiz/)
 
 -This program is a quiz consisting of seven questions relating to the region of Pennsylvania and Philadelphia. 
 
